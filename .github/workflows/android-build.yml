@@ -74,6 +74,21 @@ jobs:
           test -f "$TPL/android_debug.apk" || { echo "::error::android_debug.apk eksik"; exit 1; }
           echo "Android export template'leri tamam"
 
+      - name: Android gradle derleme şablonunu projeye kur (res://android/build)
+        run: |
+          TPL="$HOME/.local/share/godot/export_templates/${GODOT_SHORT}"
+          test -f "$TPL/android_source.zip" || { echo "::error::android_source.zip eksik"; exit 1; }
+          rm -rf /tmp/android_src && mkdir -p /tmp/android_src
+          unzip -q -o "$TPL/android_source.zip" -d /tmp/android_src
+          SRC=$(dirname "$(find /tmp/android_src -name build.gradle | head -1)")
+          echo "::warning::android_source kaynağı: $SRC"
+          rm -rf android && mkdir -p android/build
+          cp -r "$SRC/." android/build/
+          test -f android/build/build.gradle || { echo "::error::android/build/build.gradle bulunamadı"; ls android/build | head -20; exit 1; }
+          touch android/build/.gdignore
+          printf '%s [%s]\n' "$TPL/android_source.zip" "$(md5sum "$TPL/android_source.zip" | cut -d' ' -f1)" > android/.build_version
+          ls android/build | head -20
+
       - name: Debug imzalama anahtarı oluştur (yalnızca debug, gizli değil)
         run: |
           mkdir -p "$HOME/.android"
