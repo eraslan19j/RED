@@ -157,7 +157,7 @@ func apply_time() -> void:
 	env.ambient_light_energy = lerpf(0.25, 1.0, 1.0 - night) * weather_sun_dim
 
 	var sky_sys = world_manager.get_manager("SkySystem")
-	if sky_sys:
+	if sky_sys and sky_sys.sky_mat != null:
 		sky_sys.set_sun(sun_dir, light_color, energy / sun_energy_day * 1.2, night)
 		sky_sys.set_horizon(horizon, zenith, fog_col)
 	var ocean = world_manager.get_manager("Ocean")

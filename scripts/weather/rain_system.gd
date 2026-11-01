@@ -30,10 +30,14 @@ func initialize(p_wm: WorldManager) -> void:
 
 func set_intensity(v: float) -> void:
 	intensity = clampf(v, 0.0, 1.0)
+	if mat == null or mesh_instance == null:
+		return
 	mat.set_shader_parameter("intensity", intensity)
 	mesh_instance.visible = intensity > 0.02
 
 func set_lightning_flash(v: float) -> void:
+	if mat == null:
+		return
 	mat.set_shader_parameter("lightning", v)
 
 func _process(_delta: float) -> void:

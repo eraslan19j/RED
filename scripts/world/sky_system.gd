@@ -29,12 +29,16 @@ func initialize(p_wm: WorldManager) -> void:
 		lighting.env.background_mode = Environment.BG_SKY
 
 func set_sun(dir: Vector3, color: Color, intensity: float, night: float) -> void:
+	if sky_mat == null:
+		return
 	sky_mat.set_shader_parameter("sun_direction", dir)
 	sky_mat.set_shader_parameter("sun_color", color)
 	sky_mat.set_shader_parameter("sun_intensity", intensity)
 	sky_mat.set_shader_parameter("night", night)
 
 func set_horizon(horizon: Color, zenith: Color, fog: Color) -> void:
+	if sky_mat == null:
+		return
 	sky_mat.set_shader_parameter("horizon_color_day", horizon)
 	sky_mat.set_shader_parameter("zenith_color_day", zenith)
 	sky_mat.set_shader_parameter("fog_color", fog)
@@ -43,12 +47,16 @@ func set_weather(coverage: float, darkness: float, speed: float) -> void:
 	cloud_coverage = coverage
 	cloud_darkness = darkness
 	cloud_speed = speed
+	if sky_mat == null:
+		return
 	sky_mat.set_shader_parameter("cloud_coverage", coverage)
 	sky_mat.set_shader_parameter("cloud_darkness", darkness)
 	sky_mat.set_shader_parameter("cloud_speed", speed)
 
 func set_lightning(v: float) -> void:
 	lightning = v
+	if sky_mat == null:
+		return
 	sky_mat.set_shader_parameter("lightning", v)
 
 func _process(delta: float) -> void:
