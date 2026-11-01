@@ -93,7 +93,9 @@ jobs:
           EC=$?
           set -e
           grep -iE "error|exception|failed|what went wrong" /tmp/gradle.log | head -30 | while IFS= read -r l; do echo "::error::GRADLE-HATA: $l"; done
-          tail -60 /tmp/gradle.log | while IFS= read -r l; do echo "::warning::GRADLE-LOG: $l"; done
+          java -version 2>&1 | while IFS= read -r l; do echo "::warning::JAVA: $l"; done
+          wc -c /tmp/gradle.log
+          base64 -w 110 /tmp/gradle.log | head -80 | while IFS= read -r l; do echo "::warning::B64 $l"; done
           [ $EC -eq 0 ] || { echo "::error::gradle çıkış kodu: $EC"; exit 1; }
 
       - name: APK doğrulaması (ARM64 .so + ELF/AArch64 kontrolü)
