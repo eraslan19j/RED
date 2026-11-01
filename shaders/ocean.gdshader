@@ -23,7 +23,7 @@ uniform float lightning = 0.0;
 uniform float wetness = 0.0;                       // yağmur sonrası parlaklık
 
 uniform sampler2D heightmap_tex : filter_linear, repeat_disable; // dünya yükseklik haritası (RF)
-uniform vec2 heightmap_uv_scale = vec2(1.0 / 6000.0);            // world -> uv
+uniform vec2 heightmap_uv_scale = vec2(0.000166667, 0.000166667); // world -> uv (1/6000)
 uniform vec2 heightmap_uv_offset = vec2(0.5);
 uniform float heightmap_min = -60.0;
 uniform float heightmap_range = 500.0;

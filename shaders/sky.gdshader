@@ -1,5 +1,4 @@
 shader_type sky;
-render_mode sky;
 
 // Dragon Realms - fırtına gökyüzü shader'ı (özel sky modu)
 // Güneş, atmosferik degrade, çok katmanlı hareketli fırtına bulutları,

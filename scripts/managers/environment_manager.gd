@@ -271,7 +271,7 @@ func _build_castle(center: Vector3, scale_f: float, label: String) -> void:
 		win.material_override = window_mat
 		var a := TAU * float(i) / 6.0
 		win.position = Vector3(cos(a) * 6.1, 10.0, sin(a) * 6.1)
-		win.look_at(castle.global_position + Vector3(cos(a) * 20.0, 10.0, sin(a) * 20.0), Vector3.UP)
+		win.rotation.y = a + PI  # dışa dönük
 		castle.add_child(win)
 
 func _build_caves() -> void:
