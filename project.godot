@@ -48,4 +48,4 @@ lights_and_shadows/positional_shadow/soft_shadow_quality=0
 [debug]
 
 gdscript/warnings/treat_warnings_as_errors=false
-gdscript/warnings/inferred_variant=1
+gdscript/warnings/inference_on_variant=1

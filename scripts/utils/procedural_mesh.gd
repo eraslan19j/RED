@@ -5,7 +5,7 @@ extends RefCounted
 
 ## Bir primitive mesh'in yüzey dizilerini (arrays) hedef ArrayMesh'e ekler.
 ## Dönüşüm (transform) tepe noktalarına ve normal noktalara uygulanır.
-static func append_primitive(p_target: ArrayMesh, p_prim: PrimitiveMesh, p_transform: Transform3D, p_color: Color, p_color_a: float = -1.0) -> void:
+static func append_primitive(p_target: ArrayMesh, p_prim: Mesh, p_transform: Transform3D, p_color: Color, p_color_a: float = -1.0) -> void:
 	var surf := p_prim.surface_get_arrays(0)
 	if surf.is_empty():
 		return

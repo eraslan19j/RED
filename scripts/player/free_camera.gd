@@ -36,39 +36,42 @@ func _ready() -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
-		if event.pressed:
+		var t := event as InputEventScreenTouch
+		if t.pressed:
 			var w := get_viewport().get_visible_rect().size.x
-			if event.position.x < w * 0.45 and _stick_touch == -1:
-				_stick_touch = event.index
-				_stick_origin = event.position
+			if t.position.x < w * 0.45 and _stick_touch == -1:
+				_stick_touch = t.index
+				_stick_origin = t.position
 			elif _look_touch == -1:
-				_look_touch = event.index
-				_look_last = event.position
+				_look_touch = t.index
+				_look_last = t.position
 		else:
-			if event.index == _stick_touch:
+			if t.index == _stick_touch:
 				_stick_touch = -1
 				joystick = Vector2.ZERO
 				joystick_changed.emit(joystick)
-			if event.index == _look_touch:
+			if t.index == _look_touch:
 				_look_touch = -1
 	elif event is InputEventScreenDrag:
-		if event.index == _stick_touch:
-			var d := (event.position - _stick_origin) / 70.0
-			if d.length() > 1.0:
-				d = d.normalized()
-			joystick = d
+		var drag := event as InputEventScreenDrag
+		if drag.index == _stick_touch:
+			var delta := (drag.position - _stick_origin) / 70.0
+			if delta.length() > 1.0:
+				delta = delta.normalized()
+			joystick = delta
 			joystick_changed.emit(joystick)
-		elif event.index == _look_touch:
-			var d: Vector2 = event.position - _look_last
-			_look_last = event.position
-			yaw -= d.x * GameConstants.CAM_LOOK_SPEED
-			pitch -= d.y * GameConstants.CAM_LOOK_SPEED
+		elif drag.index == _look_touch:
+			var look_delta: Vector2 = drag.position - _look_last
+			_look_last = drag.position
+			yaw -= look_delta.x * GameConstants.CAM_LOOK_SPEED
+			pitch -= look_delta.y * GameConstants.CAM_LOOK_SPEED
 			pitch = clampf(pitch, -1.45, 1.45)
 	elif event is InputEventKey:
-		if event.pressed and not event.echo:
-			_keys[event.keycode] = true
+		var k := event as InputEventKey
+		if k.pressed and not k.echo:
+			_keys[k.keycode] = true
 		else:
-			_keys.erase(event.keycode)
+			_keys.erase(k.keycode)
 
 func _process(delta: float) -> void:
 	rotation = Vector3(pitch, yaw, 0.0)
