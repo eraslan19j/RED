@@ -76,8 +76,9 @@ jobs:
         run: |
           godot --headless --path . -s res://tests/test_runner.gd 2>&1 | tee /tmp/testler.log
           echo "--- betik hatası kontrolü ---"
-          if grep -E "SCRIPT ERROR|Parse Error" /tmp/testler.log > /tmp/hatalar.txt; then
-            while IFS= read -r l; do echo "::error::$l"; done < /tmp/hatalar.txt
+          grep -E "ERROR|At: res://" /tmp/testler.log | head -60 > /tmp/hatalar.txt || true
+          while IFS= read -r l; do echo "::error::$l"; done < /tmp/hatalar.txt
+          if grep -qE "SCRIPT ERROR|Parse Error" /tmp/testler.log; then
             exit 1
           fi
 
