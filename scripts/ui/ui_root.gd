@@ -224,7 +224,7 @@ func _build_settings() -> void:
 	# grafik kalitesi
 	var qrow := HBoxContainer.new()
 	vb.add_child(qrow)
-	qrow.add_child(_mk_label(qrow, "Grafik Kalitesi:"))
+	_mk_label(qrow, "Grafik Kalitesi:")
 	quality_option = OptionButton.new()
 	for n in DRSettings.QUALITY_NAMES:
 		quality_option.add_item(n)
@@ -235,7 +235,7 @@ func _build_settings() -> void:
 	# çözünürlük ölçeği
 	var rrow := HBoxContainer.new()
 	vb.add_child(rrow)
-	rrow.add_child(_mk_label(rrow, "Çözünürlük Ölçeği:"))
+	_mk_label(rrow, "Çözünürlük Ölçeği:")
 	res_slider = HSlider.new()
 	res_slider.min_value = 0.5
 	res_slider.max_value = 1.0
@@ -256,7 +256,7 @@ func _build_settings() -> void:
 
 	var vrow := HBoxContainer.new()
 	vb.add_child(vrow)
-	vrow.add_child(_mk_label(vrow, "Bitki Yoğunluğu:"))
+	_mk_label(vrow, "Bitki Yoğunluğu:")
 	veg_slider = HSlider.new()
 	veg_slider.min_value = 0.2
 	veg_slider.max_value = 1.5
@@ -268,7 +268,7 @@ func _build_settings() -> void:
 
 	var r2row := HBoxContainer.new()
 	vb.add_child(r2row)
-	r2row.add_child(_mk_label(r2row, "Yağmur Yoğunluğu:"))
+	_mk_label(r2row, "Yağmur Yoğunluğu:")
 	rain_slider = HSlider.new()
 	rain_slider.min_value = 0.3
 	rain_slider.max_value = 1.0

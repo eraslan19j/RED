@@ -45,20 +45,20 @@ func set_mesh_visible(v: bool) -> void:
 	if mesh_instance:
 		mesh_instance.visible = v
 
-## Parça geometrisi: yükseklik örnekleme + elle hesaplanan normal/tangent.
+## Parça geometrisi: yükseklik örnekleme + elle hesaplanan normal/tangent (Godot 4.7: tangent = PackedFloat32Array, tepe başına 4 float).
 func build_mesh() -> void:
 	if mesh_built:
 		return
 	var segs := segments_for_size(size)
 	var verts := PackedVector3Array()
 	var normals := PackedVector3Array()
-	var tangents := PackedVector4Array()
+	var tangents := PackedFloat32Array()
 	var uvs := PackedVector2Array()
 	var indices := PackedInt32Array()
 	var n := segs + 1
 	verts.resize(n * n)
 	normals.resize(n * n)
-	tangents.resize(n * n)
+	tangents.resize(n * n * 4)
 	uvs.resize(n * n)
 	var e := 2.0
 	var x0 := center.x - size * 0.5
@@ -82,7 +82,10 @@ func build_mesh() -> void:
 			var tan := Vector3(1.0, (hr - hl) / (2.0 * e), 0.0).normalized()
 			var bit := Vector3(0.0, (hu - hd) / (2.0 * e), 1.0).normalized()
 			var handed := 1.0 if nrm.cross(tan).dot(bit) >= 0.0 else -1.0
-			tangents[idx] = Vector4(tan.x, tan.y, tan.z, handed)
+			tangents[idx * 4] = tan.x
+			tangents[idx * 4 + 1] = tan.y
+			tangents[idx * 4 + 2] = tan.z
+			tangents[idx * 4 + 3] = handed
 	for iz in range(segs):
 		for ix in range(segs):
 			var i0 := iz * n + ix

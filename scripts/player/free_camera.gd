@@ -32,7 +32,8 @@ func initialize(p_wm: WorldManager) -> void:
 	add_child(camera)
 
 func _ready() -> void:
-	camera.current = true
+	if camera != null:
+		camera.current = true
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:

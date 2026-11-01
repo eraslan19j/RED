@@ -15,8 +15,8 @@ func _ready() -> void:
 
 	camera_ctrl = FreeCamera.new()
 	camera_ctrl.name = "FreeCamera"
+	camera_ctrl.initialize(world)  # _ready'de camera hazır olsun diye önce başlat
 	add_child(camera_ctrl)
-	camera_ctrl.initialize(world)
 	# Sahil kenarındanSpawn: kita + okyanus + adalar manzarası
 	var spawn := Vector3(0.0, 0.0, 1500.0)
 	spawn.y = world.get_terrain_height(spawn.x, spawn.z) + 38.0
