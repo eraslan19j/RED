@@ -5,6 +5,7 @@
 //! içeren küçük bir 3D sahne kurar.
 
 use bevy::prelude::*;
+use bevy::window::{MonitorSelection, WindowMode};
 
 // `bevy_main` makrosu Android için gerekli `android_main` boilerplate'ini üretir
 #[bevy_main]
@@ -38,7 +39,7 @@ fn setup(
     // Işık + gölge
     commands.spawn((
         PointLight {
-            shadows_enabled: true,
+            shadow_maps_enabled: true,
             ..default()
         },
         Transform::from_xyz(4.0, 8.0, 4.0),
