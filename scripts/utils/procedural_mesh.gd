@@ -190,6 +190,6 @@ static func make_lightning_points(p_from: Vector3, p_to: Vector3, p_segments: in
 		var p := p_from.lerp(p_to, t)
 		if i > 0 and i < p_segments:
 			var off := Vector3(rng.randf_range(-1, 1), rng.randf_range(-0.6, 0.6), rng.randf_range(-1, 1))
-			p += off * (1.0 - abs(t - 0.5) * 2.0) * 6.0
+			p += off * (1.0 - absf(t - 0.5) * 2.0) * 6.0
 		pts.append(p)
 	return pts

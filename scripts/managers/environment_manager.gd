@@ -64,7 +64,7 @@ func _find_spot(target: Vector2, radius: float, min_h: float, max_h: float, max_
 		var s := terrain.get_slope(p.x, p.y)
 		if s > max_slope:
 			continue
-		var score := s * 100.0 + abs(h - (min_h + max_h) * 0.5) * 0.1
+		var score := s * 100.0 + absf(h - (min_h + max_h) * 0.5) * 0.1
 		if score < best_score:
 			best_score = score
 			best = Vector3(p.x, h, p.y)

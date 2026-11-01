@@ -87,16 +87,16 @@ func tick_fps(delta: float) -> void:
 	_fps_frames += 1
 	_fps_timer += delta
 	if _fps_timer >= 2.0:
-		var fps := float(_fps_frames) / max(_fps_accum, 0.001)
+		var fps := float(_fps_frames) / maxf(_fps_accum, 0.001)
 		_fps_accum = 0.0
 		_fps_frames = 0
 		_fps_timer = 0.0
 		# Hedef 60 FPS: altında ise ölçeği düşür, üzerinde ise preset değerine yaklaş
 		if fps < 50.0 and _adaptive_scale > 0.5:
-			_adaptive_scale = max(0.5, _adaptive_scale - 0.05)
+			_adaptive_scale = maxf(0.5, _adaptive_scale - 0.05)
 			get_viewport().scaling_3d_scale = _adaptive_scale
 		elif fps > 58.0 and _adaptive_scale < resolution_scale:
-			_adaptive_scale = min(resolution_scale, _adaptive_scale + 0.05)
+			_adaptive_scale = minf(resolution_scale, _adaptive_scale + 0.05)
 			get_viewport().scaling_3d_scale = _adaptive_scale
 
 func save_settings() -> void:

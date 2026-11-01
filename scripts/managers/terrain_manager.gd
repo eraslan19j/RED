@@ -113,10 +113,10 @@ func _build_river_grid() -> void:
 			var b: Vector2 = river[i + 1]
 			var seg_len := a.distance_to(b)
 			var margin := 40.0
-			var minx := min(a.x, b.x) - margin
-			var maxx := max(a.x, b.x) + margin
-			var minz := min(a.y, b.y) - margin
-			var maxz := max(a.y, b.y) + margin
+			var minx := minf(a.x, b.x) - margin
+			var maxx := maxf(a.x, b.x) + margin
+			var minz := minf(a.y, b.y) - margin
+			var maxz := maxf(a.y, b.y) + margin
 			var cx0 := clampi(int((minx + GameConstants.WORLD_HALF) / cell), 0, res - 1)
 			var cx1 := clampi(int((maxx + GameConstants.WORLD_HALF) / cell), 0, res - 1)
 			var cz0 := clampi(int((minz + GameConstants.WORLD_HALF) / cell), 0, res - 1)
@@ -180,7 +180,7 @@ func get_height_raw(x: float, z: float) -> float:
 	var hills := 45.0 + n1 * 55.0
 	var mountains := ridge * ridge * peak
 	var land := hills * mask + mountains
-	var seafloor := -12.0 - abs(noise_detail.get_noise_2d(x * 0.7, z * 0.7)) * 28.0
+	var seafloor := -12.0 - absf(noise_detail.get_noise_2d(x * 0.7, z * 0.7)) * 28.0
 	return lerpf(seafloor, land, smoothstep(0.03, 0.30, mask))
 
 ## Nihai yükseklik: plaj yumuşatma + nehir oyma + göl çukuru

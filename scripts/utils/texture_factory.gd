@@ -40,7 +40,7 @@ static func make_detail_albedo(p_size: int, p_seed: int, p_base: Color, p_variat
 		for x in range(p_size):
 			var n := noise.get_pixel(x, y).r
 			var n2 := noise.get_pixel((x * 2 + 37) % p_size, (y * 2 + 11) % p_size).r
-			var t := clamp(n * 0.7 + n2 * 0.3, 0.0, 1.0)
+			var t := clampf(n * 0.7 + n2 * 0.3, 0.0, 1.0)
 			var c := p_base.lerp(p_variation, t * p_contrast + (n - 0.5) * 0.7)
 			img.set_pixel(x, y, c)
 	return ImageTexture.create_from_image(img)
@@ -92,7 +92,7 @@ static func make_foam_texture(p_size: int = 256, p_seed: int = 21) -> ImageTextu
 		for x in range(p_size):
 			var n := noise.get_pixel(x, y).r
 			var n2 := noise.get_pixel((x * 3 + 91) % p_size, (y * 3 + 57) % p_size).r
-			var v := clamp((n * 0.65 + n2 * 0.35 - 0.52) * 4.0, 0.0, 1.0)
+			var v := clampf((n * 0.65 + n2 * 0.35 - 0.52) * 4.0, 0.0, 1.0)
 			img.set_pixel(x, y, Color(v, v, v, v))
 	return ImageTexture.create_from_image(img)
 
@@ -106,7 +106,7 @@ static func make_heightmap_texture(p_res: int, p_world_size: float, p_height_fn:
 			var wx := (float(x) / float(p_res - 1) - 0.5) * p_world_size
 			var wz := (float(y) / float(p_res - 1) - 0.5) * p_world_size
 			var h := p_height_fn.call(wx, wz)
-			img.set_pixel(x, y, Color(clamp((h - p_min_h) / range_h, 0.0, 1.0), 0, 0, 1))
+			img.set_pixel(x, y, Color(clampf((h - p_min_h) / range_h, 0.0, 1.0), 0, 0, 1))
 	return ImageTexture.create_from_image(img)
 
 ## Basit dikey degrade (su şelalesi / sis) dokusu.
@@ -117,6 +117,6 @@ static func make_streak_texture(p_size: int = 128, p_seed: int = 33) -> ImageTex
 	for x in range(p_size):
 		var col := rng.randf()
 		for y in range(p_size):
-			var v := clamp(col * 1.4 - 0.25 + sin(float(y) * 0.7 + col * 40.0) * 0.08, 0.0, 1.0)
+			var v := clampf(col * 1.4 - 0.25 + sin(float(y) * 0.7 + col * 40.0) * 0.08, 0.0, 1.0)
 			img.set_pixel(x, y, Color(v, v, v, v))
 	return ImageTexture.create_from_image(img)

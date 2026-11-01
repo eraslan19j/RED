@@ -125,7 +125,7 @@ func apply_time() -> void:
 
 	if elev > 0.0:
 		# gündüz / şafak / gün batımı
-		sun_dir = Vector3(cos(t * PI) * 0.9, max(elev, 0.02), 0.28).normalized()
+		sun_dir = Vector3(cos(t * PI) * 0.9, maxf(elev, 0.02), 0.28).normalized()
 		var low := 1.0 - smoothstep(0.0, 0.35, elev)  # ufka yakınlık
 		light_color = _sun_color_day.lerp(_sun_color_low, low)
 		energy = lerpf(sun_energy_low, sun_energy_day, smoothstep(0.0, 0.5, elev))
