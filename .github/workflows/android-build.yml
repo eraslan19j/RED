@@ -33,8 +33,10 @@ jobs:
 
       - name: Android SDK komut satırı araçları
         run: |
-          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          export ANDROID_HOME="$HOME/android-sdk"
+          export ANDROID_SDK_ROOT="$HOME/android-sdk"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
           mkdir -p "$ANDROID_HOME/cmdline-tools"
           curl -fsSL -o /tmp/cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           unzip -q /tmp/cmdtools.zip -d "$ANDROID_HOME/cmdline-tools"
@@ -44,6 +46,9 @@ jobs:
             "platform-tools" \
             "platforms;android-36" \
             "build-tools;36.1.0"
+          ls "$ANDROID_HOME"
+          ls "$ANDROID_HOME/build-tools"
+          ls "$ANDROID_HOME/platforms"
 
       - name: Godot 4.7.2 indir (headless modda çalıştırılacak)
         run: |
@@ -90,6 +95,11 @@ jobs:
           EC=$?
           set -e
           head -120 /tmp/export.log | while IFS= read -r l; do echo "::warning::$l"; done
+          grep -A 25 "configuration errors" /tmp/export.log | head -30 | while IFS= read -r l; do echo "::error::$l"; done
+          grep -B2 -A8 "build-tools" /tmp/export.log | head -20 | while IFS= read -r l; do echo "::warning::$l"; done
+          echo "ANDROID_HOME=$ANDROID_HOME"; ls "$ANDROID_HOME" 2>/dev/null | while IFS= read -r l; do echo "::warning::SDK: $l"; done
+          ls "$ANDROID_HOME/build-tools" 2>/dev/null | while IFS= read -r l; do echo "::warning::build-tools: $l"; done
+          ls "$ANDROID_HOME/platforms" 2>/dev/null | while IFS= read -r l; do echo "::warning::platforms: $l"; done
           grep -E "ERROR|error:" /tmp/export.log | head -30 | while IFS= read -r l; do echo "::error::$l"; done
           ls -la build/android/ | while IFS= read -r l; do echo "::warning::$l"; done
           find . -name "*.apk" -o -name "*.aab" 2>/dev/null | while IFS= read -r l; do echo "::warning::bulundu: $l"; done
