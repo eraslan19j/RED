@@ -34,6 +34,8 @@ func initialize() -> void:
 	managers["SkySystem"].initialize(self)
 	managers["Ocean"].initialize(self)
 	managers["VegetationSystem"].initialize(self)
+	managers["RainSystem"].initialize(self)
+	managers["LightningSystem"].initialize(self)
 	managers["WeatherManager"].initialize(self)
 	managers["EnvironmentManager"].initialize(self)
 	managers["StreamingManager"].initialize(self)
