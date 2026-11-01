@@ -1,7 +1,7 @@
 # Motor Araştırması ve Seçimi — 2026-11-01 (DRAGON REALMS)
 
 > Kapsam: Godot dışındaki aday motorların **gerçek GitHub depoları, lisansları, Android
-> platform kodları, upstream CI'ları ve dokümantasyonları** üzerinden incelenmesi;然后
+> platform kodları, upstream CI'ları ve dokümantasyonları** üzerinden incelenmesi;
 > GitHub Actions üzerinde **gerçek Android ARM64 APK üretiminin kanıtlanması**.
 > Mevcut Godot projesi bu araştırma sırasında silinmedi; `main` dalına dokunulmadı.
 > Tüm bulgular `arena/aa30ce5a-red` dalında, `engine_probe/` altında canlı kanıtlarla.
