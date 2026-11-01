@@ -1,7 +1,7 @@
 # Godot
 .godot/
-.android/
-build/
+./android/
+/build/
 *.apk
 *.aab
 *.ap_
