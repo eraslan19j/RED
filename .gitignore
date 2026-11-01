@@ -19,3 +19,5 @@ engine_probe/**/target/
 engine_probe/**/build/
 engine_probe/**/.gradle/
 engine_probe/**/app/build/
+engine_probe/bevy/last_gradle.log
+engine_probe/bevy/last_cargo.log
