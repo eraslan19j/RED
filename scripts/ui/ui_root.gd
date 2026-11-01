@@ -27,6 +27,7 @@ var veg_slider: HSlider
 var rain_slider: HSlider
 var vib_check: CheckBox
 var adaptive_check: CheckBox
+var _fly_dir := 0.0
 
 func _ready() -> void:
 	layer = 10
@@ -67,18 +68,24 @@ func _build_menu() -> void:
 	var play := Button.new()
 	play.text = "Oyuna Başla"
 	_style_button(play)
-	play.pressed.connect(func(): play_pressed.emit())
+	play.pressed.connect(_on_play_pressed)
 	vb.add_child(play)
 	var settings := Button.new()
 	settings.text = "Ayarlar"
 	_style_button(settings)
-	settings.pressed.connect(func(): show_settings())
+	settings.pressed.connect(show_settings)
 	vb.add_child(settings)
 	var quit_b := Button.new()
 	quit_b.text = "Çıkış"
 	_style_button(quit_b)
-	quit_b.pressed.connect(func(): quit_pressed.emit())
+	quit_b.pressed.connect(_on_quit_pressed)
 	vb.add_child(quit_b)
+
+func _on_play_pressed() -> void:
+	play_pressed.emit()
+
+func _on_quit_pressed() -> void:
+	quit_pressed.emit()
 
 func _build_hud() -> void:
 	hud = Control.new()
@@ -103,19 +110,18 @@ func _build_hud() -> void:
 	# üst-sağ düğmeler
 	var btns := HBoxContainer.new()
 	btns.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	btns.position = Vector2(-16, 16)
-	btns.alignment = BoxContainer.ALIGNMENT_END
 	btns.anchor_left = 1.0
 	btns.anchor_right = 1.0
 	btns.offset_left = -16
 	btns.offset_top = 16
+	btns.alignment = BoxContainer.ALIGNMENT_END
 	btns.grow_horizontal = Control.GROW_DIRECTION_BEGIN
 	hud.add_child(btns)
-	_mk_btn(btns, "Hava Durumu", func(): weather_cycle_pressed.emit())
-	_mk_btn(btns, "Saat +1", func(): time_plus_pressed.emit())
-	_mk_btn(btns, "Saat -1", func(): time_minus_pressed.emit())
-	_mk_btn(btns, "Ayarlar", func(): show_settings())
-	_mk_btn(btns, "Menü", func(): menu_requested.emit())
+	_mk_btn(btns, "Hava Durumu", _on_weather_pressed)
+	_mk_btn(btns, "Saat +1", _on_time_plus)
+	_mk_btn(btns, "Saat -1", _on_time_minus)
+	_mk_btn(btns, "Ayarlar", show_settings)
+	_mk_btn(btns, "Menü", _on_menu_pressed)
 
 	# sol alt joystick
 	joystick = Joystick.new()
@@ -127,7 +133,7 @@ func _build_hud() -> void:
 	joystick.offset_bottom = -60
 	hud.add_child(joystick)
 
-	# joystick yanı kalkış/iniş düğmeleri
+	# joystick yanı kalkış/iniş düğmeleri (basılı tut)
 	var fly_box := VBoxContainer.new()
 	fly_box.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	fly_box.anchor_top = 1.0
@@ -140,15 +146,15 @@ func _build_hud() -> void:
 	up_b.text = "Yukarı"
 	up_b.add_theme_font_size_override("font_size", 20)
 	up_b.custom_minimum_size = Vector2(140, 52)
-	up_b.button_down.connect(func(): _fly_dir = 1.0)
-	up_b.button_up.connect(func(): _fly_dir = 0.0)
+	up_b.button_down.connect(_on_fly_up)
+	up_b.button_up.connect(_on_fly_stop)
 	fly_box.add_child(up_b)
 	var down_b := Button.new()
 	down_b.text = "Aşağı"
 	down_b.add_theme_font_size_override("font_size", 20)
 	down_b.custom_minimum_size = Vector2(140, 52)
-	down_b.button_down.connect(func(): _fly_dir = -1.0)
-	down_b.button_up.connect(func(): _fly_dir = 0.0)
+	down_b.button_down.connect(_on_fly_down)
+	down_b.button_up.connect(_on_fly_stop)
 	fly_box.add_child(down_b)
 
 	# sağ alt ipucu
@@ -162,6 +168,27 @@ func _build_hud() -> void:
 	hint.offset_left = -900
 	hint.offset_top = -56
 	hud.add_child(hint)
+
+func _on_weather_pressed() -> void:
+	weather_cycle_pressed.emit()
+
+func _on_time_plus() -> void:
+	time_plus_pressed.emit()
+
+func _on_time_minus() -> void:
+	time_minus_pressed.emit()
+
+func _on_menu_pressed() -> void:
+	menu_requested.emit()
+
+func _on_fly_up() -> void:
+	_fly_dir = 1.0
+
+func _on_fly_down() -> void:
+	_fly_dir = -1.0
+
+func _on_fly_stop() -> void:
+	_fly_dir = 0.0
 
 func _mk_label(parent: Control, text: String) -> Label:
 	var l := Label.new()
@@ -178,10 +205,6 @@ func _mk_btn(parent: Control, text: String, cb: Callable) -> Button:
 	b.pressed.connect(cb)
 	parent.add_child(b)
 	return b
-
-var _fly_dir := 0.0
-func _fly(d: float) -> void:
-	_fly_dir = d
 
 func _build_settings() -> void:
 	settings_panel = PanelContainer.new()
@@ -206,7 +229,7 @@ func _build_settings() -> void:
 	for n in SettingsManager.QUALITY_NAMES:
 		quality_option.add_item(n)
 	quality_option.selected = SettingsManager.quality
-	quality_option.item_selected.connect(func(i): SettingsManager.set_quality(i))
+	quality_option.item_selected.connect(_on_quality_selected)
 	qrow.add_child(quality_option)
 
 	# çözünürlük ölçeği
@@ -219,24 +242,16 @@ func _build_settings() -> void:
 	res_slider.step = 0.05
 	res_slider.value = SettingsManager.resolution_scale
 	res_slider.custom_minimum_size = Vector2(280, 0)
-	res_slider.value_changed.connect(func(v):
-		SettingsManager.resolution_scale = v
-		SettingsManager._adaptive_scale = v
-		SettingsManager.apply()
-		SettingsManager.save_settings())
-		res_value = Label.new()
+	res_slider.value_changed.connect(_on_res_changed)
+	res_value = _mk_label(rrow, "")
 	_update_res_label()
-	res_slider.value_changed.connect(func(_v): _update_res_label())
+	res_slider.value_changed.connect(_on_res_label_only)
 	rrow.add_child(res_slider)
-	rrow.add_child(res_value)
 
 	shadows_check = CheckBox.new()
 	shadows_check.text = "Gölgeler açık"
 	shadows_check.button_pressed = SettingsManager.shadows_enabled
-	shadows_check.toggled.connect(func(v):
-		SettingsManager.shadows_enabled = v
-		SettingsManager.apply()
-		SettingsManager.save_settings())
+	shadows_check.toggled.connect(_on_shadows_toggled)
 	vb.add_child(shadows_check)
 
 	var vrow := HBoxContainer.new()
@@ -248,9 +263,7 @@ func _build_settings() -> void:
 	veg_slider.step = 0.05
 	veg_slider.value = SettingsManager.vegetation_density
 	veg_slider.custom_minimum_size = Vector2(280, 0)
-	veg_slider.value_changed.connect(func(v):
-		SettingsManager.vegetation_density = v
-		SettingsManager.save_settings())
+	veg_slider.value_changed.connect(_on_veg_changed)
 	vrow.add_child(veg_slider)
 
 	var r2row := HBoxContainer.new()
@@ -262,36 +275,63 @@ func _build_settings() -> void:
 	rain_slider.step = 0.05
 	rain_slider.value = SettingsManager.rain_quality
 	rain_slider.custom_minimum_size = Vector2(280, 0)
-	rain_slider.value_changed.connect(func(v):
-		SettingsManager.rain_quality = v
-		SettingsManager.save_settings())
+	rain_slider.value_changed.connect(_on_rain_changed)
 	r2row.add_child(rain_slider)
 
 	vib_check = CheckBox.new()
 	vib_check.text = "Titreşim açık"
 	vib_check.button_pressed = SettingsManager.vibration
-	vib_check.toggled.connect(func(v):
-		SettingsManager.vibration = v
-		SettingsManager.save_settings())
+	vib_check.toggled.connect(_on_vib_toggled)
 	vb.add_child(vib_check)
 
 	adaptive_check = CheckBox.new()
 	adaptive_check.text = "Adaptif çözünürlük (FPS'e göre otomatik ölçek)"
 	adaptive_check.button_pressed = SettingsManager.adaptive_resolution
-	adaptive_check.toggled.connect(func(v):
-		SettingsManager.adaptive_resolution = v
-		SettingsManager.save_settings())
+	adaptive_check.toggled.connect(_on_adaptive_toggled)
 	vb.add_child(adaptive_check)
 
 	var back := Button.new()
 	back.text = "Geri"
 	back.add_theme_font_size_override("font_size", 26)
 	back.custom_minimum_size = Vector2(200, 60)
-	back.pressed.connect(func(): hide_settings())
+	back.pressed.connect(hide_settings)
 	vb.add_child(back)
 
+func _on_quality_selected(i: int) -> void:
+	SettingsManager.set_quality(i)
+
+func _on_res_changed(v: float) -> void:
+	SettingsManager.resolution_scale = v
+	SettingsManager._adaptive_scale = v
+	SettingsManager.apply()
+	SettingsManager.save_settings()
+
+func _on_res_label_only(_v: float) -> void:
+	_update_res_label()
+
+func _on_shadows_toggled(v: bool) -> void:
+	SettingsManager.shadows_enabled = v
+	SettingsManager.apply()
+	SettingsManager.save_settings()
+
+func _on_veg_changed(v: float) -> void:
+	SettingsManager.vegetation_density = v
+	SettingsManager.save_settings()
+
+func _on_rain_changed(v: float) -> void:
+	SettingsManager.rain_quality = v
+	SettingsManager.save_settings()
+
+func _on_vib_toggled(v: bool) -> void:
+	SettingsManager.vibration = v
+	SettingsManager.save_settings()
+
+func _on_adaptive_toggled(v: bool) -> void:
+	SettingsManager.adaptive_resolution = v
+	SettingsManager.save_settings()
+
 func _update_res_label() -> void:
-	if res_value:
+	if res_value and res_slider:
 		res_value.text = "%d%%" % int(res_slider.value * 100.0)
 
 func show_menu() -> void:
@@ -323,6 +363,4 @@ func update_hud(fps: int, pos: Vector3, hour: float, weather_name: String, chunk
 	joystick.set_value(joystick_value)
 
 func get_fly_input() -> float:
-	var v := _fly_dir
-	_fly_dir = 0.0
-	return v
+	return _fly_dir
