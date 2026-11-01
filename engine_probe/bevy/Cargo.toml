@@ -1,0 +1,15 @@
+[package]
+name = "dragon_realms_probe"
+version = "0.1.0"
+edition = "2021"
+publish = false
+license = "MIT OR Apache-2.0"
+description = "DRAGON REALMS motor arastirmasi: Bevy 0.20 ile gercek Android ARM64 APK probu (CI kaniti)"
+
+[lib]
+name = "dragon_realms_probe"
+crate-type = ["lib", "cdylib"]
+
+[dependencies]
+# Resmi Bevy mobil ornegiyle ayni desen: varsayilan ozellikler + GameActivity
+bevy = { version = "0.20", features = ["android-game-activity"] }

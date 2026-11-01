@@ -1,0 +1,115 @@
+name: "Motor Araştırması — Bevy Android ARM64 APK (gerçek derleme testi)"
+
+# Godot projesine dokunmaz; yalnızca engine_probe altinda bir degisiklikte veya
+# elle (workflow_dispatch) calisir.
+on:
+  push:
+    branches:
+      - 'arena/**'
+    paths:
+      - 'engine_probe/**'
+      - '.github/workflows/engine-probe-bevy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bevy-android-probe:
+    name: Bevy 0.20 -> Android ARM64 APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      ANDROID_HOME: /home/runner/android-sdk
+      ANDROID_SDK_ROOT: /home/runner/android-sdk
+      CARGO_PROFILE_DEV_DEBUG: "0"   # debug sembolleri kapali -> target klasoru kucuk kalir
+      CARGO_INCREMENTAL: "0"
+    steps:
+      - name: Depoyu klonla
+        uses: actions/checkout@v4
+
+      - name: Rust (stable) + aarch64-linux-android hedefi
+        run: |
+          curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain stable
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          rustup target add aarch64-linux-android
+          rustc --version
+
+      - name: JDK 21 (AGP 9 gereksinimi)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Android SDK + NDK 27.3 (LTS)
+        run: |
+          export ANDROID_HOME=/home/runner/android-sdk
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+          curl -fsSL -o /tmp/cmdtools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip -q /tmp/cmdtools.zip -d "$ANDROID_HOME/cmdline-tools"
+          mv "$ANDROID_HOME/cmdline-tools/cmdline-tools" "$ANDROID_HOME/cmdline-tools/latest"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0" \
+            "ndk;27.3.13750724"
+          echo "ANDROID_NDK_ROOT=$ANDROID_HOME/ndk/27.3.13750724" >> $GITHUB_ENV
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/27.3.13750724" >> $GITHUB_ENV
+
+      - name: cargo-ndk kurulumu
+        run: cargo install cargo-ndk --locked
+
+      - name: Cargo önbelleği
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            engine_probe/bevy/target
+          key: bevy-probe-${{ hashFiles('engine_probe/bevy/Cargo.lock') }}-${{ runner.os }}
+          restore-keys: |
+            bevy-probe-
+
+      - name: Rust cdylib derle (cargo-ndk, arm64-v8a -> jniLibs)
+        working-directory: engine_probe/bevy
+        run: |
+          cargo ndk -t arm64-v8a -P 26 -o android/app/src/main/jniLibs build --package dragon_realms_probe
+          ls -la android/app/src/main/jniLibs/arm64-v8a/
+
+      - name: Gradle assembleDebug (APK üret)
+        working-directory: engine_probe/bevy/android
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:assembleDebug --no-daemon
+
+      - name: APK doğrulaması (ARM64 .so + ELF/AArch64 kontrolü)
+        run: |
+          APK=$(find engine_probe/bevy/android -path "*outputs/apk/debug*" -name "*.apk" | head -1)
+          echo "APK=$APK"
+          ls -la "$APK"
+          unzip -l "$APK" > /tmp/apk_liste.txt
+          grep -E "lib/arm64-v8a/|classes\.dex|AndroidManifest\.xml" /tmp/apk_liste.txt
+          grep -q "lib/arm64-v8a/libdragon_realms_probe.so" /tmp/apk_liste.txt \
+            && echo "OK: lib/arm64-v8a/libdragon_realms_probe.so APK icinde"
+          python3 - <<'PY'
+          import zipfile, glob
+          apk = glob.glob("engine_probe/bevy/android/app/build/outputs/apk/debug/*.apk")[0]
+          z = zipfile.ZipFile(apk)
+          so = z.read("lib/arm64-v8a/libdragon_realms_probe.so")
+          assert so[:4] == b"\x7fELF", "ELF magic yok"
+          assert so[4] == 2, "ELF64 degil"
+          assert so[18] == 0xB7, "EM_AARCH64 (183) degil: %d" % so[18]
+          names = z.namelist()
+          assert "classes.dex" in names, "classes.dex yok"
+          print("DOGRULANDI: ELF64 AArch64 .so, boyut =", len(so), "bayt; girdi sayisi =", len(names))
+          PY
+          mkdir -p probe_out && cp "$APK" probe_out/DRAGON_REALMS_BEVY_PROBE.apk
+
+      - name: Artefakt olarak yayınla
+        uses: actions/upload-artifact@v4
+        with:
+          name: BEVY_ANDROID_PROBE_APK
+          path: probe_out/DRAGON_REALMS_BEVY_PROBE.apk
+          if-no-files-found: error
+          retention-days: 14

@@ -13,3 +13,9 @@ build/
 # CI cache
 .gradle/
 android/
+
+# Engine probe (Bevy) derleme ciktlari
+engine_probe/**/target/
+engine_probe/**/build/
+engine_probe/**/.gradle/
+engine_probe/**/app/build/
