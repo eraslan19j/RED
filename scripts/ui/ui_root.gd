@@ -226,9 +226,9 @@ func _build_settings() -> void:
 	vb.add_child(qrow)
 	qrow.add_child(_mk_label(qrow, "Grafik Kalitesi:"))
 	quality_option = OptionButton.new()
-	for n in SettingsManager.QUALITY_NAMES:
+	for n in DRSettings.QUALITY_NAMES:
 		quality_option.add_item(n)
-	quality_option.selected = SettingsManager.quality
+	quality_option.selected = DRSettings.get_instance().quality
 	quality_option.item_selected.connect(_on_quality_selected)
 	qrow.add_child(quality_option)
 
@@ -240,7 +240,7 @@ func _build_settings() -> void:
 	res_slider.min_value = 0.5
 	res_slider.max_value = 1.0
 	res_slider.step = 0.05
-	res_slider.value = SettingsManager.resolution_scale
+	res_slider.value = DRSettings.get_instance().resolution_scale
 	res_slider.custom_minimum_size = Vector2(280, 0)
 	res_slider.value_changed.connect(_on_res_changed)
 	res_value = _mk_label(rrow, "")
@@ -250,7 +250,7 @@ func _build_settings() -> void:
 
 	shadows_check = CheckBox.new()
 	shadows_check.text = "Gölgeler açık"
-	shadows_check.button_pressed = SettingsManager.shadows_enabled
+	shadows_check.button_pressed = DRSettings.get_instance().shadows_enabled
 	shadows_check.toggled.connect(_on_shadows_toggled)
 	vb.add_child(shadows_check)
 
@@ -261,7 +261,7 @@ func _build_settings() -> void:
 	veg_slider.min_value = 0.2
 	veg_slider.max_value = 1.5
 	veg_slider.step = 0.05
-	veg_slider.value = SettingsManager.vegetation_density
+	veg_slider.value = DRSettings.get_instance().vegetation_density
 	veg_slider.custom_minimum_size = Vector2(280, 0)
 	veg_slider.value_changed.connect(_on_veg_changed)
 	vrow.add_child(veg_slider)
@@ -273,20 +273,20 @@ func _build_settings() -> void:
 	rain_slider.min_value = 0.3
 	rain_slider.max_value = 1.0
 	rain_slider.step = 0.05
-	rain_slider.value = SettingsManager.rain_quality
+	rain_slider.value = DRSettings.get_instance().rain_quality
 	rain_slider.custom_minimum_size = Vector2(280, 0)
 	rain_slider.value_changed.connect(_on_rain_changed)
 	r2row.add_child(rain_slider)
 
 	vib_check = CheckBox.new()
 	vib_check.text = "Titreşim açık"
-	vib_check.button_pressed = SettingsManager.vibration
+	vib_check.button_pressed = DRSettings.get_instance().vibration
 	vib_check.toggled.connect(_on_vib_toggled)
 	vb.add_child(vib_check)
 
 	adaptive_check = CheckBox.new()
 	adaptive_check.text = "Adaptif çözünürlük (FPS'e göre otomatik ölçek)"
-	adaptive_check.button_pressed = SettingsManager.adaptive_resolution
+	adaptive_check.button_pressed = DRSettings.get_instance().adaptive_resolution
 	adaptive_check.toggled.connect(_on_adaptive_toggled)
 	vb.add_child(adaptive_check)
 
@@ -298,37 +298,37 @@ func _build_settings() -> void:
 	vb.add_child(back)
 
 func _on_quality_selected(i: int) -> void:
-	SettingsManager.set_quality(i)
+	DRSettings.get_instance().set_quality(i)
 
 func _on_res_changed(v: float) -> void:
-	SettingsManager.resolution_scale = v
-	SettingsManager._adaptive_scale = v
-	SettingsManager.apply()
-	SettingsManager.save_settings()
+	DRSettings.get_instance().resolution_scale = v
+	DRSettings.get_instance()._adaptive_scale = v
+	DRSettings.get_instance().apply()
+	DRSettings.get_instance().save_settings()
 
 func _on_res_label_only(_v: float) -> void:
 	_update_res_label()
 
 func _on_shadows_toggled(v: bool) -> void:
-	SettingsManager.shadows_enabled = v
-	SettingsManager.apply()
-	SettingsManager.save_settings()
+	DRSettings.get_instance().shadows_enabled = v
+	DRSettings.get_instance().apply()
+	DRSettings.get_instance().save_settings()
 
 func _on_veg_changed(v: float) -> void:
-	SettingsManager.vegetation_density = v
-	SettingsManager.save_settings()
+	DRSettings.get_instance().vegetation_density = v
+	DRSettings.get_instance().save_settings()
 
 func _on_rain_changed(v: float) -> void:
-	SettingsManager.rain_quality = v
-	SettingsManager.save_settings()
+	DRSettings.get_instance().rain_quality = v
+	DRSettings.get_instance().save_settings()
 
 func _on_vib_toggled(v: bool) -> void:
-	SettingsManager.vibration = v
-	SettingsManager.save_settings()
+	DRSettings.get_instance().vibration = v
+	DRSettings.get_instance().save_settings()
 
 func _on_adaptive_toggled(v: bool) -> void:
-	SettingsManager.adaptive_resolution = v
-	SettingsManager.save_settings()
+	DRSettings.get_instance().adaptive_resolution = v
+	DRSettings.get_instance().save_settings()
 
 func _update_res_label() -> void:
 	if res_value and res_slider:

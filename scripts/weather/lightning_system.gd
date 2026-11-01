@@ -48,9 +48,9 @@ func _process(delta: float) -> void:
 
 func _strike() -> void:
 	flash = randf_range(0.7, 1.0)
-	SettingsManager.vibrate(60)
+	DRSettings.get_instance().vibrate(60)
 	var cam := get_viewport().get_camera_3d()
-	var base := cam.global_position if cam else Vector3.ZERO
+	var base: Vector3 = cam.global_position if cam else Vector3.ZERO
 	# gökyüzünde rastgele bir noktadan yere
 	var angle := randf_range(0.0, TAU)
 	var dist := randf_range(700.0, 2200.0)

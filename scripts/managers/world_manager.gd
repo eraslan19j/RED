@@ -38,7 +38,7 @@ func initialize() -> void:
 	managers["EnvironmentManager"].initialize(self)
 	managers["StreamingManager"].initialize(self)
 
-	SettingsManager.settings_changed.connect(_on_settings_changed)
+	DRSettings.get_instance().settings_changed.connect(_on_settings_changed)
 	_on_settings_changed()
 	world_ready.emit()
 
@@ -67,11 +67,11 @@ func _on_settings_changed() -> void:
 	var veg = managers.get("VegetationSystem")
 	var weather = managers.get("WeatherManager")
 	if lighting:
-		lighting.apply_quality(SettingsManager.shadows_enabled, SettingsManager.quality)
+		lighting.apply_quality(DRSettings.get_instance().shadows_enabled, DRSettings.get_instance().quality)
 	if veg:
-		veg.set_density(SettingsManager.vegetation_density)
+		veg.set_density(DRSettings.get_instance().vegetation_density)
 	if weather:
-		weather.apply_quality(SettingsManager.rain_quality)
+		weather.apply_quality(DRSettings.get_instance().rain_quality)
 
 func _process(delta: float) -> void:
-	SettingsManager.tick_fps(delta)
+	DRSettings.get_instance().tick_fps(delta)

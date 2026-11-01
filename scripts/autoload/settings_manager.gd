@@ -1,3 +1,4 @@
+class_name DRSettings
 extends Node
 ## SettingsManager (autoload) - grafik kalitesi presetleri, çözünürlük ölçeği,
 ## gölgeler, MSAA, bitki yoğunluğu, titreşim ve ayarların kalıcı saklanması.
@@ -18,6 +19,16 @@ var vibration := true
 var adaptive_resolution := true     # FPS'e göre otomatik çözünürlük ölçekleme
 
 var _adaptive_scale := 1.0
+
+static var _inst: DRSettings
+
+## Derleme-time autoload adı yerine her bağlamda çalışan erişim.
+static func get_instance() -> DRSettings:
+	if _inst == null:
+		var ml := Engine.get_main_loop()
+		if ml is SceneTree:
+			_inst = (ml as SceneTree).root.get_node_or_null("SettingsManager") as DRSettings
+	return _inst
 var _fps_accum := 0.0
 var _fps_frames := 0
 var _fps_timer := 0.0

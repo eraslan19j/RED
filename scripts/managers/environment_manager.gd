@@ -79,7 +79,7 @@ func _build_rivers() -> void:
 		var dist := 0.0
 		var prev := Vector2.ZERO
 		for i in range(river.size()):
-			var p := river[i]
+			var p: Vector2 = river[i]
 			var dir := Vector2(1, 0)
 			if i < river.size() - 1:
 				dir = (river[i + 1] - p).normalized()

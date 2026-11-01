@@ -109,8 +109,8 @@ func _build_river_grid() -> void:
 	var cell := river_grid_world / float(res)
 	for river in rivers:
 		for i in range(river.size() - 1):
-			var a := river[i]
-			var b := river[i + 1]
+			var a: Vector2 = river[i]
+			var b: Vector2 = river[i + 1]
 			var seg_len := a.distance_to(b)
 			var margin := 40.0
 			var minx := min(a.x, b.x) - margin
@@ -155,10 +155,10 @@ func _compute_waterfall_spots() -> void:
 	# Her nehrin denize döküldüğü yerde şelale noktası bul
 	for river in rivers:
 		for i in range(river.size() - 1, 0, -1):
-			var p := river[i]
+			var p: Vector2 = river[i]
 			var h := get_height_raw(p.x, p.y)
 			if h > 2.5:
-				var top := river[i]
+				var top: Vector2 = river[i]
 				var top_h := get_height_raw(top.x, top.y)
 				waterfall_spots.append({"pos": Vector3(top.x, top_h + 0.4, top.y), "flow": (river[i - 1] - top).normalized()})
 				break
@@ -172,7 +172,7 @@ func get_height_raw(x: float, z: float) -> float:
 		var f := smoothstep(isl["radius"], isl["radius"] * 0.30, d)
 		if f > mask:
 			mask = f
-		var p := f * isl["peak"]
+		var p: float = f * isl["peak"]
 		if p > peak:
 			peak = p
 	var n1 := noise_hills.get_noise_2d(x, z)

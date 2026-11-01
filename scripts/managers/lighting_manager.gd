@@ -100,7 +100,7 @@ func apply_quality(shadows_on: bool, quality: int) -> void:
 			sun.directional_shadow_mode = DirectionalLight3D.SHADOW_PARALLEL_4_SPLITS
 	if env:
 		env.glow_enabled = quality >= 2
-		get_viewport().msaa_3d = SettingsManager.msaa
+		get_viewport().msaa_3d = DRSettings.get_instance().msaa
 
 func set_weather_modulation(sun_dim: float, extra_fog: float) -> void:
 	weather_sun_dim = sun_dim
@@ -133,7 +133,7 @@ func apply_time() -> void:
 		horizon = _horizon_day.lerp(_horizon_low, low)
 		fog_col = _fog_day.lerp(_fog_low, low)
 		night = 0.0
-		sun.shadow_enabled = SettingsManager.shadows_enabled and elev > 0.03
+		sun.shadow_enabled = DRSettings.get_instance().shadows_enabled and elev > 0.03
 	else:
 		# gece: ay
 		var tn := fposmod(h + 12.0 - 6.0, 24.0) / 12.0

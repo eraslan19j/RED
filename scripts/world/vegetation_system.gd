@@ -91,7 +91,7 @@ func populate_chunk(chunk: TerrainChunk) -> void:
 		var slope := terrain.get_slope(wx, wz)
 		var b := biome.get_biome(wx, wz, h, slope)
 		var moist := biome.get_moisture(wx, wz)
-		var is_tree := b["type"] == BiomeManager.Biome.FOREST and slope < 0.62 and moist > 0.38
+		var is_tree: bool = b["type"] == BiomeManager.Biome.FOREST and slope < 0.62 and moist > 0.38
 		if is_tree and rng.randf() < 0.55 * lod * density_multiplier:
 			var s := rng.randf_range(0.75, 1.5)
 			var rot := Basis.from_euler(Vector3(0, rng.randf_range(0, TAU), 0))

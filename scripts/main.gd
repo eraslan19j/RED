@@ -41,7 +41,7 @@ func _ready() -> void:
 func _on_play() -> void:
 	ui.show_game()
 	camera_ctrl.enabled = true
-	SettingsManager.vibrate(30)
+	DRSettings.get_instance().vibrate(30)
 
 func _process(delta: float) -> void:
 	camera_ctrl.fly_input = ui.get_fly_input()
