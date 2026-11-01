@@ -60,10 +60,19 @@ jobs:
 
       - name: Export template'leri kur
         run: |
-          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_SHORT}"
+          TPL="$HOME/.local/share/godot/export_templates/${GODOT_SHORT}"
+          mkdir -p "$TPL"
           curl -fsSL -o /tmp/templates.tpz "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
-          unzip -q /tmp/templates.tpz -d "$HOME/.local/share/godot/export_templates/${GODOT_SHORT}"
-          ls "$HOME/.local/share/godot/export_templates/${GODOT_SHORT}" | head
+          unzip -q -o /tmp/templates.tpz -d "$TPL"
+          # tpz içinde üst seviye "templates/" klasörü varsa içeriğini bir üste taşı
+          if [ -d "$TPL/templates" ]; then
+            mv "$TPL/templates/"* "$TPL/"
+            rmdir "$TPL/templates"
+          fi
+          ls "$TPL" | head -30
+          test -f "$TPL/android_source.zip" || { echo "::error::android_source.zip eksik"; exit 1; }
+          test -f "$TPL/android_debug.apk" || { echo "::error::android_debug.apk eksik"; exit 1; }
+          echo "Android export template'leri tamam"
 
       - name: Debug imzalama anahtarı oluştur (yalnızca debug, gizli değil)
         run: |
