@@ -85,11 +85,23 @@ jobs:
       - name: Android ARM64 APK dışa aktar (debug imza)
         run: |
           mkdir -p build/android
-          godot --headless --path . --export-debug "Android" "build/android/${APK_NAME}" 2>&1 | tee /tmp/export.log
+          set +e
+          godot --headless --path . --export-debug "Android" "build/android/${APK_NAME}" > /tmp/export.log 2>&1
+          EC=$?
+          set -e
+          head -120 /tmp/export.log | while IFS= read -r l; do echo "::warning::$l"; done
+          grep -E "ERROR|error:" /tmp/export.log | head -30 | while IFS= read -r l; do echo "::error::$l"; done
+          ls -la build/android/ | while IFS= read -r l; do echo "::warning::$l"; done
+          find . -name "*.apk" -o -name "*.aab" 2>/dev/null | while IFS= read -r l; do echo "::warning::bulundu: $l"; done
           if grep -E "SCRIPT ERROR|Parse Error" /tmp/export.log; then
             echo "::error::Dışa aktarma sırasında betik hatası"
             exit 1
           fi
+          if [ $EC -ne 0 ]; then
+            echo "::error::godot dışa aktarma çıkış kodu: $EC"
+            exit 1
+          fi
+          test -s "build/android/${APK_NAME}" || { echo "::error::APK üretilmedi: build/android/${APK_NAME}"; exit 1; }
 
       - name: APK doğrulaması
         run: |
