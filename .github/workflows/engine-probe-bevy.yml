@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   bevy-android-probe:
@@ -92,11 +92,23 @@ jobs:
           ./gradlew :app:assembleDebug --no-daemon > /tmp/gradle.log 2>&1
           EC=$?
           set -e
-          grep -iE "error|exception|failed|what went wrong" /tmp/gradle.log | head -30 | while IFS= read -r l; do echo "::error::GRADLE-HATA: $l"; done
-          java -version 2>&1 | while IFS= read -r l; do echo "::warning::JAVA: $l"; done
-          wc -c /tmp/gradle.log
-          base64 -w 110 /tmp/gradle.log | head -80 | while IFS= read -r l; do echo "::warning::B64 $l"; done
-          [ $EC -eq 0 ] || { echo "::error::gradle çıkış kodu: $EC"; exit 1; }
+          echo "gradle çıkış kodu: $EC"
+          wc -c /tmp/gradle.log || true
+          grep -iE "error|exception|failed|what went wrong" /tmp/gradle.log | head -30 | while IFS= read -r l; do echo "::error::GRADLE-HATA: $l"; done || true
+          tail -40 /tmp/gradle.log | while IFS= read -r l; do echo "::warning::GRADLE-LOG: $l"; done || true
+          exit $EC
+
+      - name: Teşhis günlüğünü depoya yaz [skip ci]
+        if: failure()
+        run: |
+          git config user.email "ci@dragonrealms.local"
+          git config user.name "CI"
+          mkdir -p engine_probe/bevy
+          cp /tmp/gradle.log engine_probe/bevy/last_gradle.log 2>/dev/null || echo "gradle.log bos/yok" > engine_probe/bevy/last_gradle.log
+          cp /tmp/cargo.log engine_probe/bevy/last_cargo.log 2>/dev/null || true
+          git add engine_probe/bevy/last_gradle.log engine_probe/bevy/last_cargo.log
+          git commit -m "ci: probe teşhis günlüğü [skip ci]" || true
+          git push origin HEAD:arena/aa30ce5a-red || true
 
       - name: APK doğrulaması (ARM64 .so + ELF/AArch64 kontrolü)
         run: |
