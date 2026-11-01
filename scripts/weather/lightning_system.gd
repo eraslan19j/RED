@@ -59,11 +59,11 @@ func _strike() -> void:
 	var to := Vector3(from.x, terrain.get_height(from.x, from.z) + 1.0, from.z)
 	var pts := ProceduralMeshUtil.make_lightning_points(from, to, 16, randi())
 	var im := ImmediateMesh.new()
-	im.begin(Mesh.PRIMITIVE_LINES)
+	im.surface_begin(Mesh.PRIMITIVE_LINES)
 	for i in range(pts.size() - 1):
-		im.add_vertex(pts[i])
-		im.add_vertex(pts[i + 1])
-	im.end()
+		im.surface_add_vertex(pts[i])
+		im.surface_add_vertex(pts[i + 1])
+	im.surface_end()
 	var mi := MeshInstance3D.new()
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
