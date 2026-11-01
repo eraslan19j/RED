@@ -1,6 +1,6 @@
 # Godot
 .godot/
-./android/
+.android/
 /build/
 *.apk
 *.aab
@@ -12,7 +12,7 @@
 
 # CI cache
 .gradle/
-android/
+/android/
 
 # Engine probe (Bevy) derleme ciktlari
 engine_probe/**/target/

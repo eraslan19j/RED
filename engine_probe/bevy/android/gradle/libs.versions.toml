@@ -1,0 +1,13 @@
+[versions]
+agp = "9.4.1"
+appcompat = "1.8.0"
+core = "1.19.1"
+gamesActivity = "4.4.2" # Not: Bevy'nin kullandigi `android-activity` crate ile uyumlu olmalidir.
+
+[libraries]
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+core = { group = "androidx.core", name = "core", version.ref = "core" }
+games-activity = { group = "androidx.games", name = "games-activity", version.ref = "gamesActivity" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
