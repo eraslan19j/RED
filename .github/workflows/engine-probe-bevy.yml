@@ -74,8 +74,15 @@ jobs:
       - name: Rust cdylib derle (cargo-ndk, arm64-v8a -> jniLibs)
         working-directory: engine_probe/bevy
         run: |
-          cargo ndk -t arm64-v8a -P 26 -o android/app/src/main/jniLibs build --package dragon_realms_probe
-          ls -la android/app/src/main/jniLibs/arm64-v8a/
+          set +e
+          cargo ndk -t arm64-v8a -P 26 -o android/app/src/main/jniLibs build --package dragon_realms_probe > /tmp/cargo.log 2>&1
+          EC=$?
+          set -e
+          grep -E "^error" /tmp/cargo.log | head -30 | while IFS= read -r l; do echo "::error::$l"; done
+          grep -E "^error" -A 6 /tmp/cargo.log | head -60 | while IFS= read -r l; do echo "::warning::$l"; done
+          tail -15 /tmp/cargo.log | while IFS= read -r l; do echo "::warning::$l"; done
+          ls -la android/app/src/main/jniLibs/arm64-v8a/ 2>/dev/null || true
+          [ $EC -eq 0 ] || { echo "::error::cargo çıkış kodu: $EC"; exit 1; }
 
       - name: Gradle assembleDebug (APK üret)
         working-directory: engine_probe/bevy/android
