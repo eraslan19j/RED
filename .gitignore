@@ -1,0 +1,14 @@
+# Godot
+.godot/
+.android/
+build/
+*.apk
+*.aab
+*.ap_
+
+# OS / IDE
+.DS_Store
+*.tmp
+
+# CI cache
+.gradle/

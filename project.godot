@@ -1,0 +1,46 @@
+; Dragon Realms - Godot 4.7.2 proje yapılandırması
+; Motor: Godot 4.7.2 stable | Renderer: Mobile (Vulkan) | Hedef: Android ARM64
+
+config_version=5
+
+[application]
+
+config/name="Dragon Realms"
+config/description="Dragon Realms - Açık dünya ejderha macerası (Mobil)"
+run/main_scene="res://scenes/main.tscn"
+config/features=PackedStringArray("4.7", "Mobile")
+boot_splash/bg_color=Color(0.012, 0.016, 0.03, 1)
+config/icon="res://icon.svg"
+
+[autoload]
+
+SettingsManager="*res://scripts/autoload/settings_manager.gd"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/resizable=true
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=0
+window/vsync/vsync_mode=1
+
+[internationalization]
+
+locale/fallback="tr"
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=false
+
+[rendering]
+
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="mobile"
+renderer/rendering_method.web="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.012, 0.016, 0.03, 1)
+anti_aliasing/quality/msaa_3d=1
+lights_and_shadows/directional_shadow/size=4096
+lights_and_shadows/positional_shadow/soft_shadow_quality=0
