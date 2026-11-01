@@ -223,7 +223,7 @@ func _build_settings() -> void:
 		SettingsManager.resolution_scale = v
 		SettingsManager._adaptive_scale = v
 		SettingsManager.apply()
-		SettingsManager.save_settings()
+		SettingsManager.save_settings())
 		res_value = Label.new()
 	_update_res_label()
 	res_slider.value_changed.connect(func(_v): _update_res_label())
