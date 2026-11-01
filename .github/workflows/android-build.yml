@@ -86,8 +86,8 @@ jobs:
           cp -r "$SRC/." android/build/
           test -f android/build/build.gradle || { echo "::error::android/build/build.gradle bulunamadı"; ls android/build | head -20; exit 1; }
           touch android/build/.gdignore
-          # varsayılan şablon için tanımlayıcı = GODOT_VERSION_FULL_CONFIG (örn. 4.7.2.stable.official.ed1daf0bf)
-          godot --headless --version | awk '{print $1}' > android/.build_version
+          # varsayılan şablon için tanımlayıcı = GODOT_VERSION_FULL_CONFIG (örn. 4.7.2.stable)
+          echo "${GODOT_SHORT}" > android/.build_version
           echo "::warning::.build_version = $(cat android/.build_version)"
           ls android/build | head -20
 
