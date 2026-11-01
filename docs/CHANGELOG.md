@@ -24,6 +24,19 @@
   ARM64 APK dışa aktarımı, `DRAGON_REALMS_ANDROID_APK` artefaktı, `v*` release
 - Ejderha sistemleri için arayüz stub'ları (`DragonController`, `DragonFlightPhysics`)
 
+### Düzeltildi (CI iterasyonu, 2026-11-01)
+- GDScript 4.7 uyumu: `append_primitive` parametresi `Mesh` olarak genişletildi;
+  Variant'tan `:=` çıkarımı yapılan tüm noktalar açık tipe çevrildi
+  (`debug/gdscript/warnings/inference_on_variant=1` ile INFERENCE_ON_VARIANT uyarıya indirildi)
+- `shader_type sky` içinde geçersiz `render_mode sky` kaldırıldı; uniform sabit ifadeleri düzeltildi
+- Godot 4.7 mesh API: tepe başına tangent artık `PackedFloat32Array` (4 float)
+- `ImmediateMesh` Godot 4 API'sine çevrildi (`surface_begin/surface_add_vertex/surface_end`)
+- `RainSystem`/`LightningSystem` başlatma sırası düzeltildi; UI çift `add_child` hatası giderildi
+- CI: export template tpz yerleşimi düzeltildi; `android_source.zip` `res://android/build`
+  içine kuruluyor, `.build_version = 4.7.2.stable`; `ANDROID_HOME` aynı adımda export edildi
+- Sonuç: Actions workflow TAMAMI yeşil (13/13 adım), testler geçiyor,
+  ARM64 APK üretildi ve `DRAGON_REALMS_ANDROID_APK` artefaktı yayınlandı (run 41304391092)
+
 ### Bilinen Sınırlamalar
 - Tüm varlıklar prosedürel (dış asset yok) — M2'de CC0 asset entegrasyonu
 - Ses yok — M2

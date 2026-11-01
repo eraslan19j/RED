@@ -17,7 +17,7 @@ void vertex() {
 }
 
 void fragment() {
-	// silindir yan yüzeyi: uv.xEnvironment -> açı, uv.y -> yükseklik
+	// silindir yan yüzeyi: uv.x -> açı, uv.y -> yükseklik
 	vec2 suv = vec2(UV.x * 24.0, UV.y * 3.0 - TIME * (2.2 + fall_speed));
 	float s = texture(streak_tex, suv).r;
 	// ince çizgiler: eşik

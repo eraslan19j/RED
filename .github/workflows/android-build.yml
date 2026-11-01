@@ -120,18 +120,11 @@ jobs:
           godot --headless --path . --export-debug "Android" "build/android/${APK_NAME}" > /tmp/export.log 2>&1
           EC=$?
           set -e
-          head -120 /tmp/export.log | while IFS= read -r l; do echo "::warning::$l"; done
+          tail -25 /tmp/export.log | while IFS= read -r l; do echo "::warning::$l"; done
           grep -A 25 "configuration errors" /tmp/export.log | head -30 | while IFS= read -r l; do echo "::error::$l"; done
           grep -A 6 "version mismatch" /tmp/export.log | head -10 | while IFS= read -r l; do echo "::error::$l"; done
-          echo "::warning::.build_version içeriği: [$(cat android/.build_version 2>/dev/null)]"
-          echo "::warning::godot version: $(godot --headless --version)"
-          grep -B2 -A8 "build-tools" /tmp/export.log | head -20 | while IFS= read -r l; do echo "::warning::$l"; done
-          echo "ANDROID_HOME=$ANDROID_HOME"; ls "$ANDROID_HOME" 2>/dev/null | while IFS= read -r l; do echo "::warning::SDK: $l"; done
-          ls "$ANDROID_HOME/build-tools" 2>/dev/null | while IFS= read -r l; do echo "::warning::build-tools: $l"; done
-          ls "$ANDROID_HOME/platforms" 2>/dev/null | while IFS= read -r l; do echo "::warning::platforms: $l"; done
           grep -E "ERROR|error:" /tmp/export.log | head -30 | while IFS= read -r l; do echo "::error::$l"; done
-          ls -la build/android/ | while IFS= read -r l; do echo "::warning::$l"; done
-          find . -name "*.apk" -o -name "*.aab" 2>/dev/null | while IFS= read -r l; do echo "::warning::bulundu: $l"; done
+          ls -la build/android/
           if grep -E "SCRIPT ERROR|Parse Error" /tmp/export.log; then
             echo "::error::Dışa aktarma sırasında betik hatası"
             exit 1
